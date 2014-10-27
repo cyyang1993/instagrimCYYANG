@@ -11,20 +11,20 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Instagrim</title>
-        <link rel="stylesheet" type="text/css" href="/Instagrim/Styles.css" />
+        <title>instagrimCYYANG</title>
+        <link rel="stylesheet" type="text/css" href="/instagrimCYYANG/Styles.css" />
     </head>
     <body>
         <header>
         
-        <h1>InstaGrim ! </h1>
+        <h1>instagrimCYYANG ! </h1>
         <h2>Your world in Black and White</h2>
         </header>
         
         <nav>
             <ul>
-                <li class="nav"><a href="/Instagrim/upload.jsp">Upload</a></li>
-                <li class="nav"><a href="/Instagrim/Images/majed">Sample Images</a></li>
+                <li class="nav"><a href="/instagrimCYYANG/upload.jsp">Upload</a></li>
+                <li class="nav"><a href="/instagrimCYYANG/Images/majed">Sample Images</a></li>
             </ul>
         </nav>
  
@@ -37,21 +37,45 @@
         <p>No Pictures found</p>
         <%
         } else {
+       		
             Iterator<Pic> iterator;
             iterator = lsPics.iterator();
+            
+            /*    int arraySize=0;
             while (iterator.hasNext()) {
-                Pic p = (Pic) iterator.next();
-
-        %>
-        <a href="/Instagrim/Image/<%=p.getSUUID()%>" ><img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a><br/><%
-
+            	arraySize++;
             }
-            }
+            UUID pic[]=new type[arraySize]; 
+            iterator = lsPics.iterator();
+            for(int i=0;iterator.hasNext();i++) {          	
+          		Pic p = (Pic) iterator.next();
+          		UUID pic[i]=p.getSUUID();
+           		}
+            
+            iterator = lsPics.iterator();
+            for(int i=0;iterator.hasNext();i++) {
+            */
+            while (iterator.hasNext()) {
+        Pic p = (Pic) iterator.next();
+       // if(p.getBytes()!=null){
         %>
+        <%--
+      
+        <a href="/instagrimCYYANG/Image/<%=p.getSUUID()%>" >
+           
+        --%>
+         
+        <a href="/instagrimCYYANG/showImage/<%=p.getSUUID()%>?pic=<%=p.getSUUID()%>" ><img src="/instagrimCYYANG/Thumb/<%=p.getSUUID()%>"></a>
+         <a href="/instagrimCYYANG/delete.jsp?pic=<%=p.getSUUID()%>">delete</a><br/>
+        <%
+        //}
+           }
+            }
+                  %>
         </article>
         <footer>
             <ul>
-                <li class="footer"><a href="/Instagrim">Home</a></li>
+                <li class="footer"><a href="/instagrimCYYANG">Home</a></li>
             </ul>
         </footer>
     </body>

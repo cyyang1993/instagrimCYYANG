@@ -20,16 +20,15 @@ public class LoggedIn {
     public void setUsername(String name){
         this.Username=name;
     }
-    public String getUsername(){
-        return Username;
-    }
     public void setLogedin(){
         logedin=true;
     }
     public void setLogedout(){
         logedin=false;
     }
-    
+    public String getUsername(){
+    	return Username;
+    }
     public void setLoginState(boolean logedin){
         this.logedin=logedin;
     }

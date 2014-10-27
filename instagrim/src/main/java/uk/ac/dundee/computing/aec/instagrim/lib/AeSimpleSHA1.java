@@ -30,6 +30,6 @@ public class AeSimpleSHA1 {
     md.update(text.getBytes("iso-8859-1"), 0, text.length());
     sha1hash = md.digest();
     return convertToHex(sha1hash);
-    } 
+    }
 } 
  

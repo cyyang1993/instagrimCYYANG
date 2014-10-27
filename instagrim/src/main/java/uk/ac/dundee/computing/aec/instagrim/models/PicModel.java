@@ -36,6 +36,11 @@ import org.imgscalr.Scalr.Method;
 
 import uk.ac.dundee.computing.aec.instagrim.lib.*;
 import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
+import uk.ac.dundee.computing.aec.instagrim.lib.CassandraHosts;
+import uk.ac.dundee.computing.aec.instagrim.lib.Convertors;
+import uk.ac.dundee.computing.aec.instagrim.models.PicModel;
+import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
+import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
 //import uk.ac.dundee.computing.aec.stores.TweetStore;
 
 public class PicModel {
@@ -50,7 +55,7 @@ public class PicModel {
         this.cluster = cluster;
     }
 
-    public void insertPic(byte[] b, String type, String name, String user) {
+    public void insertPic(byte[] b, String type, String name, String user,String style) {
         try {
             Convertors convertor = new Convertors();
 
@@ -60,17 +65,44 @@ public class PicModel {
             java.util.UUID picid = convertor.getTimeUUID();
             
             //The following is a quick and dirty way of doing this, will fill the disk quickly !
-            Boolean success = (new File("/var/tmp/instagrim/")).mkdirs();
-            FileOutputStream output = new FileOutputStream(new File("/var/tmp/instagrim/" + picid));
+            Boolean success = (new File("/var/tmp/instagrimCYYANG/")).mkdirs();
+            FileOutputStream output = new FileOutputStream(new File("/var/tmp/instagrimCYYANG/" + picid));
 
             output.write(b);
-            byte []  thumbb = picresize(picid.toString(),types[1]);
-            int thumblength= thumbb.length;
+            byte []  thumbb;
+            int thumblength;
+            byte[] processedb;
+            thumbb = picresize(picid.toString(),types[1]);
+            thumblength= thumbb.length;
+            processedb = notpicdecolour(picid.toString(),types[1]);
+           
+            if(style=="wb")
+            	{ thumbb = picresizede(picid.toString(),types[1]);
+                thumblength= thumbb.length;
+                processedb = picdecolour(picid.toString(),types[1]);
+               	}
+           /*switch (style) {
+            case "wb":
+            	 thumbb = picresizede(picid.toString(),types[1]);
+                 thumblength= thumbb.length;
+                 processedb = picdecolour(picid.toString(),types[1]);
+                 break;
+            case "original":
+            	thumbb = picresize(picid.toString(),types[1]);
+                thumblength= thumbb.length;
+                processedb = notpicdecolour(picid.toString(),types[1]);
+                break;
+            default: 
+            	thumbb = picresize(picid.toString(),types[1]);
+            	thumblength= thumbb.length;
+            	processedb = notpicdecolour(picid.toString(),types[1]);                
+            }
+            */
+            
             ByteBuffer thumbbuf=ByteBuffer.wrap(thumbb);
-            byte[] processedb = picdecolour(picid.toString(),types[1]);
             ByteBuffer processedbuf=ByteBuffer.wrap(processedb);
             int processedlength=processedb.length;
-            Session session = cluster.connect("instagrim");
+            Session session = cluster.connect("instagrimCYYANG");
 
             PreparedStatement psInsertPic = session.prepare("insert into pics ( picid, image,thumb,processed, user, interaction_time,imagelength,thumblength,processedlength,type,name) values(?,?,?,?,?,?,?,?,?,?,?)");
             PreparedStatement psInsertPicToUser = session.prepare("insert into userpiclist ( picid, user, pic_added) values(?,?,?)");
@@ -89,7 +121,7 @@ public class PicModel {
 
     public byte[] picresize(String picid,String type) {
         try {
-            BufferedImage BI = ImageIO.read(new File("/var/tmp/instagrim/" + picid));
+            BufferedImage BI = ImageIO.read(new File("/var/tmp/instagrimCYYANG/" + picid));
             BufferedImage thumbnail = createThumbnail(BI);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(thumbnail, type, baos);
@@ -104,9 +136,45 @@ public class PicModel {
         return null;
     }
     
+    public byte[] picresizede(String picid,String type) {
+        try {
+            BufferedImage BI = ImageIO.read(new File("/var/tmp/instagrimCYYANG/" + picid));
+            BufferedImage thumbnail = createThumbnailde(BI);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(thumbnail, type, baos);
+            baos.flush();
+            
+            byte[] imageInByte = baos.toByteArray();
+            baos.close();
+            return imageInByte;
+        } catch (IOException et) {
+
+        }
+        return null;
+    }
+    
+    public byte[] notpicdecolour(String picid,String type) {
+        try {
+            BufferedImage processed = ImageIO.read(new File("/var/tmp/instagrimCYYANG/" + picid));
+             ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(processed, type, baos);
+            baos.flush();
+            byte[] imageInByte = baos.toByteArray();
+            baos.close();
+            return imageInByte;
+        } catch (IOException et) {
+
+        	
+        	
+        	
+        }
+        return null;
+    }
+    
+    
     public byte[] picdecolour(String picid,String type) {
         try {
-            BufferedImage BI = ImageIO.read(new File("/var/tmp/instagrim/" + picid));
+            BufferedImage BI = ImageIO.read(new File("/var/tmp/instagrimCYYANG/" + picid));
             BufferedImage processed = createProcessed(BI);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(processed, type, baos);
@@ -116,12 +184,23 @@ public class PicModel {
             return imageInByte;
         } catch (IOException et) {
 
+        	
+        	
+        	
         }
         return null;
     }
 
+    
+    public static BufferedImage createThumbnailde(BufferedImage img) {
+        img = resize(img, Method.SPEED,250,OP_ANTIALIAS,OP_GRAYSCALE);
+        //, 250, OP_ANTIALIAS, OP_GRAYSCALE
+        // Let's add a little border before we return result.
+        return pad(img, 2);
+    }
     public static BufferedImage createThumbnail(BufferedImage img) {
-        img = resize(img, Method.SPEED, 250, OP_ANTIALIAS, OP_GRAYSCALE);
+        img = resize(img, Method.SPEED,250,null,null);
+        //, 250, OP_ANTIALIAS, OP_GRAYSCALE
         // Let's add a little border before we return result.
         return pad(img, 2);
     }
@@ -134,7 +213,7 @@ public class PicModel {
    
     public java.util.LinkedList<Pic> getPicsForUser(String User) {
         java.util.LinkedList<Pic> Pics = new java.util.LinkedList<>();
-        Session session = cluster.connect("instagrim");
+        Session session = cluster.connect("instagrimCYYANG");
         PreparedStatement ps = session.prepare("select picid from userpiclist where user =?");
         ResultSet rs = null;
         BoundStatement boundStatement = new BoundStatement(ps);
@@ -157,8 +236,32 @@ public class PicModel {
         return Pics;
     }
 
+     public void deletePic(java.util.UUID picidU	) {
+    	//boolean result=false;
+    	try {
+    		Session session = cluster.connect("instagrimCYYANG"); 
+             PreparedStatement psDeletePic = session.prepare("delete from pics where picid=?");
+             //PreparedStatement psDeletePiclist = session.prepare("delete from userpiclist where user=? & where DateAdded=? ");
+             ResultSet rs = null;
+                //ResultSet rs1 = null;
+             BoundStatement boundStatement = new BoundStatement(psDeletePic);
+                  // BoundStatement boundStatement1 = new BoundStatement(psDeletePiclist);
+             rs = session.execute( // this is where the query is executed
+                     boundStatement.bind( // here you are binding the 'boundStatement'
+                             picidU));    
+             //rs1 = session.execute( // this is where the query is executed
+                //boundStatement1.bind( // here you are binding the 'boundStatement'
+                  //    user,DateAdded));
+             session.close();
+    	} catch (Exception ex) {
+         System.out.println("delete Pic" + ex);
+         
+    	}
+    	 
+      	//return result;
+    }
     public Pic getPic(int image_type, java.util.UUID picid) {
-        Session session = cluster.connect("instagrim");
+        Session session = cluster.connect("instagrimCYYANG");
         ByteBuffer bImage = null;
         String type = null;
         int length = 0;

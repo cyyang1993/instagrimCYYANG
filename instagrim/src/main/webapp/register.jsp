@@ -9,18 +9,18 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Instagrim</title>
+        <title>instagrimCYYANG</title>
         <link rel="stylesheet" type="text/css" href="Styles.css" />
     </head>
     <body>
         <header>
-        <h1>InstaGrim ! </h1>
+        <h1>instagrimCYYANG ! </h1>
         <h2>Your world in Black and White</h2>
         </header>
         <nav>
             <ul>
                 
-                <li><a href="/Instagrim/Images/majed">Sample Images</a></li>
+                <li><a href="/instagrimCYYANG/Images/majed">Sample Images</a></li>
             </ul>
         </nav>
        
@@ -30,15 +30,17 @@
                 <ul>
                     <li>User Name <input type="text" name="username"></li>
                     <li>Password <input type="password" name="password"></li>
+                    <li>first name <input type="text" name="firstname"></li>
+                    <li>last name <input type="text" name="lastname"></li>
                 </ul>
                 <br/>
-                <input type="submit" value="Regidter"> 
+                <input type="submit" value="Register"> 
             </form>
 
         </article>
         <footer>
             <ul>
-                <li class="footer"><a href="/Instagrim">Home</a></li>
+                <li class="footer"><a href="/instagrimCYYANG">Home</a></li>
             </ul>
         </footer>
     </body>

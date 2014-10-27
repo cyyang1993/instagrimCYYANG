@@ -4,29 +4,33 @@
     Author     : Administrator
 --%>
 
+<%@page import="java.util.*"%>
+
+<%@ page import="uk.ac.dundee.computing.aec.instagrim.stores.*" %>
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Instagrim</title>
+        <title>instagrimCYYANG</title>
         <link rel="stylesheet" type="text/css" href="Styles.css" />
-
     </head>
     <body>
         <header>
-        <h1>InstaGrim ! </h1>
+        <h1>instagrimCYYANG ! </h1>
         <h2>Your world in Black and White</h2>
         </header>
         <nav>
             <ul>
                 
-                <li><a href="/Instagrim/Images/majed">Sample Images</a></li>
+                <li><a href="/instagrimCYYANG/Images/majed">Sample Images</a></li>
             </ul>
         </nav>
+     
        
         <article>
-            <h3>Login</h3>
+        <h3>Login</h3>
             <form method="POST"  action="Login">
                 <ul>
                     <li>User Name <input type="text" name="username"></li>
@@ -39,7 +43,7 @@
         </article>
         <footer>
             <ul>
-                <li class="footer"><a href="/Instagrim">Home</a></li>
+                <li class="footer"><a href="/instagrimCYYANG">Home</a></li>
             </ul>
         </footer>
     </body>

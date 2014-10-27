@@ -47,12 +47,14 @@ public class Register extends HttpServlet {
             throws ServletException, IOException {
         String username=request.getParameter("username");
         String password=request.getParameter("password");
+        String firstname=request.getParameter("firstname");
+        String lastname=request.getParameter("lastname"); 
         
         User us=new User();
         us.setCluster(cluster);
-        us.RegisterUser(username, password);
+        us.RegisterUser(username, password, firstname, lastname);
         
-	response.sendRedirect("/Instagrim");
+	response.sendRedirect("/instagrimCYYANG");
         
     }
 

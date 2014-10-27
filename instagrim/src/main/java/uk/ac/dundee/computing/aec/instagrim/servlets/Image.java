@@ -33,7 +33,12 @@ import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
     "/Image/*",
     "/Thumb/*",
     "/Images",
-    "/Images/*"
+    "/Images/*",
+    "/showImage",
+    "/showImage/*",
+    "/Imageguest",
+    "/Imageguest/*",
+   
 })
 @MultipartConfig
 
@@ -54,6 +59,8 @@ public class Image extends HttpServlet {
         CommandsMap.put("Image", 1);
         CommandsMap.put("Images", 2);
         CommandsMap.put("Thumb", 3);
+        CommandsMap.put("showImage", 4);
+        CommandsMap.put("Imageguest", 5);
 
     }
 
@@ -66,6 +73,8 @@ public class Image extends HttpServlet {
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
      * response)
      */
+    
+   
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // TODO Auto-generated method stub
         String args[] = Convertors.SplitRequestPath(request);
@@ -86,6 +95,12 @@ public class Image extends HttpServlet {
             case 3:
                 DisplayImage(Convertors.DISPLAY_THUMB,args[2],  response);
                 break;
+            case 4:
+                DisplayImage1(args[2], request, response);
+                break;
+            case 5:
+                Imageguest(args[2], request, response);
+                break;
             default:
                 error("Bad Operator", response);
         }
@@ -98,14 +113,30 @@ public class Image extends HttpServlet {
         RequestDispatcher rd = request.getRequestDispatcher("/UsersPics.jsp");
         request.setAttribute("Pics", lsPics);
         rd.forward(request, response);
-
     }
 
-    private void DisplayImage(int type,String Image, HttpServletResponse response) throws ServletException, IOException {
+    private void DisplayImage1(String Image, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PicModel tm = new PicModel();
         tm.setCluster(cluster);
-  
-        
+        Pic p = tm.getPic(0,java.util.UUID.fromString(Image));
+        RequestDispatcher rd = request.getRequestDispatcher("/Showbigpic.jsp");
+        request.setAttribute("onepic",p);
+        rd.forward(request, response);
+    }
+
+    private void Imageguest(String User, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        PicModel tm = new PicModel();
+        tm.setCluster(cluster);
+        java.util.LinkedList<Pic> lsPics = tm.getPicsForUser(User);
+        RequestDispatcher rd = request.getRequestDispatcher("/Imageguest.jsp");
+        request.setAttribute("Pics", lsPics);
+        rd.forward(request, response);
+    }
+    
+	private void DisplayImage(int type,String Image, HttpServletResponse response) throws ServletException, IOException {
+        PicModel tm = new PicModel();
+        tm.setCluster(cluster);
+      
         Pic p = tm.getPic(type,java.util.UUID.fromString(Image));
         
         OutputStream out = response.getOutputStream();
@@ -133,6 +164,8 @@ public class Image extends HttpServlet {
             int i = is.available();
             HttpSession session=request.getSession();
             LoggedIn lg= (LoggedIn)session.getAttribute("LoggedIn");
+            String style;
+            style=(String)request.getParameter("style");
             String username="majed";
             if (lg.getlogedin()){
                 username=lg.getUsername();
@@ -143,7 +176,7 @@ public class Image extends HttpServlet {
                 System.out.println("Length : " + b.length);
                 PicModel tm = new PicModel();
                 tm.setCluster(cluster);
-                tm.insertPic(b, type, filename, username);
+                tm.insertPic(b, type, filename, username,request.getParameter("style"));
 
                 is.close();
             }
